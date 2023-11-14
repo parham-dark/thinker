@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import {
   TextField,
@@ -7,6 +7,8 @@ import {
   Paper,
   Typography,
   Snackbar,
+  InputAdornment,
+  IconButton,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import axios from "axios";
@@ -14,6 +16,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setToken } from "../redux/slices/authSlice";
 import api from "../services/api";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -31,6 +34,14 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     alignContent: "center",
   },
+  passwordInput: {
+    passwordInput: {
+      width: "calc(100% - 32px)",
+    },
+    showPasswordIcon: {
+      color: theme.palette.primary.main,
+    },
+  },
 }));
 
 const LoginForm = () => {
@@ -43,6 +54,7 @@ const LoginForm = () => {
 
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSnackbarOpen = (message) => {
     setSnackbarMessage(message);
@@ -51,6 +63,21 @@ const LoginForm = () => {
 
   const handleSnackbarClose = () => {
     setOpenSnackbar(false);
+  };
+
+  useEffect(() => {
+    if (openSnackbar) {
+      // Auto-close Snackbar after 4 seconds
+      const timerId = setTimeout(() => {
+        setOpenSnackbar(false);
+      }, 4000);
+
+      return () => clearTimeout(timerId);
+    }
+  }, [openSnackbar]);
+
+  const onRegisterClick = () => {
+    navigate("/Register");
   };
 
   const onSubmit = async (data) => {
@@ -62,14 +89,20 @@ const LoginForm = () => {
 
       if (response.status === 200) {
         handleSnackbarOpen("با موفقیت لاگین شد");
-        navigate("/CreatePerson");
+
+        // Use setTimeout to delay the navigation slightly
+        setTimeout(() => {
+          navigate("/home");
+        }, 1000); // Adjust the delay time as needed
       } else {
         handleSnackbarOpen("Login failed. Check your credentials");
       }
     } catch (error) {
       console.error("Login failed:", error);
       setError("Login failed. An error occurred.");
-      handleSnackbarOpen("Login failed. An error occurred");
+      handleSnackbarOpen(
+        "شناسه یا پسوورد شما اشتباه است اگر ثبت نام نکردید ثبت نام کنید"
+      );
     }
   };
 
@@ -80,6 +113,20 @@ const LoginForm = () => {
           <Paper elevation={3} className={classes.paper}>
             <Typography mb={4} variant="h5" component="div" align="center">
               Login
+            </Typography>
+            <Typography variant="subtitle1" align="center" gutterBottom>
+              آیا شما حساب کاربری ساخته اید؟ اگر نکردید لطفا ثبت نام کنید
+              <span
+                style={{
+                  color: "blue",
+                  cursor: "pointer",
+                  margin: "2px",
+                  padding: "2px",
+                }}
+                onClick={onRegisterClick}
+              >
+                ثبت نام
+              </span>
             </Typography>
             <form onSubmit={handleSubmit(onSubmit)} className={classes.form}>
               <Controller
@@ -104,9 +151,21 @@ const LoginForm = () => {
                     {...field}
                     label="Password"
                     variant="outlined"
-                    type="password"
                     fullWidth
-                    className={classes.input}
+                    type={showPassword ? "text" : "password"}
+                    className={showPassword ? classes.showPasswordIcon : ""}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => setShowPassword(!showPassword)}
+                            edge="end"
+                          >
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
                   />
                 )}
               />

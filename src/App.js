@@ -10,6 +10,9 @@ import NotFound from "./components/NotFound";
 import CreatePerson from "./components/CreatePerson";
 import CreateIdea from "./components/CreateIdea";
 import AcceptIdea from "./components/AcceptIdea";
+import RefeereIdea from "./components/RefeereIdea";
+import ThinkerIdea from "./components/ThinkeIdea";
+import PendingIdea from "./components/PendingIdea";
 
 function App() {
   return (
@@ -17,15 +20,22 @@ function App() {
       <ThemeProvider theme={theme}>
         <Router>
           <Routes>
-            <Route path="/" element={<RegisterForm />} />
-            <Route path="/login" element={<LoginForm />} />
+            {/* Default route for /login */}
+            <Route path="/" index element={<LoginForm />} />
+
+            <Route path="/Register" element={<RegisterForm />} />
             <Route path="/createPerson" element={<CreatePerson />} />
             <Route path="/home" element={<Home />} />
             <Route path="/CreateIdea" element={<CreateIdea />} />
             <Route path="/acceptIdea" element={<AcceptIdea />} />
-
+            <Route path="/thinker" element={<ThinkerIdea />} />
+            <Route path="/refeere" element={<RefeereIdea />} />
+            <Route path="/pending" element={<PendingIdea />} />
+            {/* Uncomment and modify the following lines if needed */}
             {/* <Route path="/thinker" element={<Thinker />} /> */}
             {/* <Route path="/referee" element={<Referee />} /> */}
+
+            {/* 404 Not Found */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>

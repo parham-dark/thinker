@@ -10,8 +10,14 @@ import {
   AppBar,
   Toolbar,
   Paper,
+  Drawer,
+  List,
+  ListItem,
+  ListItemText,
 } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
+import MenuIcon from "@mui/icons-material/Menu";
+
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
@@ -19,6 +25,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { makeStyles } from "@mui/styles";
 import Footer from "./footer";
 import { ThemeProvider } from "@mui/styles";
+import RefeereIdea from "./RefeereIdea";
+import CreatePerson from "./CreatePerson";
 
 const theme = {
   spacing: (factor) => `${0.25 * factor}rem`,
@@ -26,7 +34,6 @@ const theme = {
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    // backgroun  d: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)",
     minHeight: "100vh",
     display: "flex",
     flexDirection: "column",
@@ -85,9 +92,31 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
     marginBottom: theme.spacing(4),
   },
+  // Add your additional styles here
+  appBar: {
+    // Your styles for the app bar
+  },
+  toolbar: {
+    // Your styles for the toolbar
+  },
+  drawer: {
+    // Your styles for the drawer
+  },
+  listItem: {
+    // Your styles for list items
+  },
 }));
 
 const Home = (props) => {
+  // const location = useLocation();
+  // const navigate = useNavigate();
+  // const access = location.state?.access;
+  // const personId = location.state?.personId;
+  // const { control, handleSubmit } = useForm();
+  // const [ideas, setIdeas] = useState([]);
+  // const [ideasRefeer, setIdeasRefeer] = useState([]);
+  // const [isMenuOpen, setIsMenuOpen] = useState(false); // New state for menu status
+
   const location = useLocation();
   const navigate = useNavigate();
   const access = location.state?.access;
@@ -95,6 +124,7 @@ const Home = (props) => {
   const { control, handleSubmit } = useForm();
   const [ideas, setIdeas] = useState([]);
   const [ideasRefeer, setIdeasRefeer] = useState([]);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   useEffect(() => {
     const apiUrl = "http://localhost:57679/api/Thinker/GetAllAcceptIdeas";
@@ -140,131 +170,59 @@ const Home = (props) => {
 
   const classes = useStyles();
 
+  const handleDrawerToggle = () => {
+    setIsDrawerOpen(!isDrawerOpen);
+  };
+
+  const handleNavigate = (route) => {
+    let targetComponent;
+
+    if (route === "thinker") {
+      targetComponent = "thinker";
+    } else if (route === "refeere") {
+      targetComponent = "refeere";
+    }
+
+    navigate(`/${targetComponent}`);
+    setIsDrawerOpen(false); // Close the drawer after navigating
+  };
+
   return (
     <>
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6">Thinker</Typography>
-        </Toolbar>
-      </AppBar>
-      <div className={classes.containerAll}>
-        <ThemeProvider theme={theme}>
-          <div className={classes.root}>
-            <Container className={classes.container}>
-              {access === 0 ? (
-                <div className={classes.buttonClass}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() =>
-                      navigate("/acceptIdea", { state: { personId, access } })
-                    }
-                    className={classes.button}
-                  >
-                    Accept Ideas
-                  </Button>
-                  <div className={classes.buttonClass2}>
-                    <Button
-                      variant="contained"
-                      color="secondary"
-                      onClick={() => navigate("/CreateIdea")}
-                      className={classes.button}
-                    >
-                      Create Idea
-                    </Button>
-                  </div>
-                </div>
-              ) : access === 1 ? (
-                <Grid item xs={12} className={classes.rootContainer}>
-                  <Typography
-                    className={classes.title}
-                    variant="h4"
-                    component="div"
-                    gutterBottom
-                  >
-                    Accepted Ideas
-                  </Typography>
-                  {ideas.map((idea) => (
-                    <Paper className={classes.paper}>
-                      <Grid
-                        item
-                        xs={12}
-                        key={idea.id}
-                        className={classes.accordion}
-                      >
-                        <Accordion>
-                          <AccordionSummary
-                            className={`${classes.accordionSummary} ${classes.accordionSummaryItem}`}
-                          >
-                            <Typography variant="h6">{idea.name}</Typography>
-                          </AccordionSummary>
-                          <AccordionDetails>
-                            <Typography>ID: {idea.id}</Typography>
-                            <Typography>
-                              Created At: {idea.createdAt}
-                            </Typography>
-                            <Typography>
-                              Description: {idea.description}
-                            </Typography>
-                          </AccordionDetails>
-                        </Accordion>
-                      </Grid>
-                    </Paper>
-                  ))}
-                  <Typography
-                    className={classes.title}
-                    variant="h4"
-                    component="div"
-                    gutterBottom
-                  >
-                    Pending Ideas
-                  </Typography>
-                  {ideasRefeer.map((idea) => (
-                    <Grid item xs={12} className={classes.accordion}>
-                      <Accordion>
-                        <AccordionSummary
-                          className={`${classes.accordionSummary} ${classes.accordionSummaryItem}`}
-                        >
-                          <Typography variant="h6">{idea.name}</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                          <Typography>ID: {idea.id}</Typography>
-                          <Typography>Created At: {idea.createdAt}</Typography>
-                          <Typography>
-                            Description: {idea.description}
-                          </Typography>
-                          <form
-                            onSubmit={handleSubmit(acceptIdea)}
-                            className={classes.form}
-                          >
-                            <ToastContainer />
-                            <Controller
-                              name="ideaId"
-                              control={control}
-                              defaultValue={idea.id}
-                              render={({ field }) => (
-                                <input type="hidden" {...field} />
-                              )}
-                            />
-                            <Button
-                              variant="contained"
-                              color="primary"
-                              type="submit"
-                            >
-                              Accept
-                            </Button>
-                          </form>
-                        </AccordionDetails>
-                      </Accordion>
-                    </Grid>
-                  ))}
-                </Grid>
-              ) : null}
-            </Container>
-          </div>
-        </ThemeProvider>
-        <Footer navigate={navigate} />
-      </div>
+      <ThemeProvider theme={theme}>
+        <AppBar position="static" className={classes.appBar}>
+          <Toolbar className={classes.toolbar}>
+            <Button color="inherit" onClick={handleDrawerToggle}>
+              <MenuIcon />
+            </Button>
+          </Toolbar>
+        </AppBar>
+
+        <Drawer
+          anchor="left"
+          open={isDrawerOpen}
+          onClose={handleDrawerToggle}
+          className={classes.drawer}
+        >
+          <List>
+            <ListItem
+              button
+              onClick={() => handleNavigate("thinker")}
+              className={classes.listItem}
+            >
+              <ListItemText primary="Thinker" />
+            </ListItem>
+            <ListItem
+              button
+              onClick={() => handleNavigate("refeere")}
+              className={classes.listItem}
+            >
+              <ListItemText primary="Referee" />
+            </ListItem>
+          </List>
+        </Drawer>
+        <CreatePerson />
+      </ThemeProvider>
     </>
   );
 };

@@ -7,6 +7,7 @@ import {
   Container,
   Paper,
   Button,
+  Snackbar,
 } from "@mui/material";
 import axios from "axios";
 import { makeStyles } from "@mui/styles";
@@ -14,6 +15,7 @@ import ThumbUpIcon from "@mui/icons-material/ThumbUp"; // Import the thumb up ic
 import ThumbDownIcon from "@mui/icons-material/ThumbDown"; // Import the thumb down icon
 import { useLocation, useNavigate } from "react-router-dom";
 import Footer from "./footer";
+import { useSelector } from "react-redux"; // Add this line
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -67,11 +69,24 @@ const AcceptIdea = () => {
   const classes = useStyles();
   const [ideas, setIdeas] = useState([]);
   const location = useLocation();
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const personId = useSelector((state) => state.auth.personId);
+
   const navigate = useNavigate();
-  const personId = location.state?.personId;
+  // const personId = location.state?.personId;
   const access = location.state?.access;
 
-  console.log(access, "access");
+  console.log(personId, "personId");
+
+  const handleSnackbarOpen = (message) => {
+    setSnackbarMessage(message);
+    setOpenSnackbar(true);
+  };
+
+  const handleSnackbarClose = () => {
+    setOpenSnackbar(false);
+  };
 
   const handleLikeClick = (ideaId) => {
     const likeData = {
@@ -86,6 +101,7 @@ const AcceptIdea = () => {
           idea.id === ideaId ? { ...idea, liked: true, disliked: false } : idea
         );
         setIdeas(updatedIdeas);
+        handleSnackbarOpen("You liked the idea!");
         console.log("API response:", response.data);
       })
       .catch((error) => {
@@ -106,6 +122,7 @@ const AcceptIdea = () => {
           idea.id === ideaId ? { ...idea, liked: false, disliked: true } : idea
         );
         setIdeas(updatedIdeas);
+        handleSnackbarOpen("You disliked the idea!");
         console.log("API response:", response.data);
       })
       .catch((error) => {
@@ -171,7 +188,14 @@ const AcceptIdea = () => {
             </AccordionDetails>
           </Accordion>
         ))}
+        <Snackbar
+          open={openSnackbar}
+          autoHideDuration={4000}
+          onClose={handleSnackbarClose}
+          message={snackbarMessage}
+        />
       </Paper>
+
       <Footer navigate={navigate} />
     </div>
   );

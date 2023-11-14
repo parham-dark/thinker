@@ -11,15 +11,16 @@ import {
   Grid,
   Typography,
   Paper,
-  AppBar,
-  Toolbar,
-  IconButton,
+  Skeleton,
+  Snackbar,
 } from "@mui/material";
 import axios from "axios";
 import { makeStyles } from "@mui/styles";
 import { useNavigate } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 import Footer from "./footer";
+import { useDispatch } from "react-redux";
+import { setPersonId } from "../redux/slices/authSlice";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -30,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
   },
   form: {
     width: "100%",
-    maxWidth: 400,
+    maxWidth: 450,
     padding: theme.spacing(3),
   },
   formControl: {
@@ -59,6 +60,11 @@ const CreatePerson = () => {
   const { control, handleSubmit, register } = useForm();
   const classes = useStyles();
   const navigate = useNavigate();
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+
+  const [loading, setLoading] = useState(false); // Add loading state
+  const dispatch = useDispatch();
 
   const onSubmit = async (data) => {
     try {
@@ -72,35 +78,35 @@ const CreatePerson = () => {
         "http://localhost:57679/Thinker/Person/create",
         postData
       );
-      // console.log("API response:", response.data);
-      const personId = response.data.personId;
 
-      // console.log(personId, "personId");
+      // const personId = response.data.personId;
+      dispatch(setPersonId(response.data.personId));
 
-      navigate("/home", {
-        state: {
-          access: selectedRole,
-          name: postData.name,
-          personId: personId,
-        },
-      });
+      if (response.status === 201) {
+        setSnackbarMessage(
+          "با موفقیت ثبت شد برای امور خود به پنل نقش خود مراجعه کنید"
+        );
+        setOpenSnackbar(true);
+      } else {
+      }
     } catch (error) {
-      console.error("Error:", error);
+      setSnackbarMessage("شما قبلا با این نام ثبت کردید");
+      setOpenSnackbar(true);
     }
+  };
+
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpenSnackbar(false);
   };
 
   return (
     <>
-      <AppBar position="static">
-        <Toolbar>
-          {/* <IconButton edge="start" color="inherit" aria-label="menu">
-            <MenuIcon />
-          </IconButton> */}
-          <Typography variant="h6">Thinker</Typography>
-        </Toolbar>
-      </AppBar>
       <Grid justifyContent="center" mt={38} ml={90}>
-        <Paper elevation={3} className={classes.form}>
+        <Paper elevation={5} className={classes.form}>
           <Typography
             mb={2}
             variant="h5"
@@ -138,8 +144,17 @@ const CreatePerson = () => {
             >
               Submit
             </Button>
+            <Typography>
+              با کلیک بر روی منوی بالا سمت چپ صفحه به امورات نقش خود بپردازید
+            </Typography>
           </form>
         </Paper>
+        <Snackbar
+          open={openSnackbar}
+          autoHideDuration={4000}
+          onClose={handleSnackbarClose}
+          message={snackbarMessage}
+        />
       </Grid>
       <div className={classes.formClassFooter}>
         <Footer navigate={navigate} />

@@ -1,12 +1,22 @@
 import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { TextField, Button, Grid, Paper, Typography } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Grid,
+  Paper,
+  Typography,
+  Snackbar,
+  InputAdornment,
+  IconButton,
+} from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import { setUserId } from "../redux/slices/authSlice";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useDispatch } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
@@ -23,6 +33,14 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     alignContent: "center",
   },
+  passwordInput: {
+    passwordInput: {
+      width: "calc(100% - 32px)",
+    },
+    showPasswordIcon: {
+      color: theme.palette.primary.main,
+    },
+  },
 }));
 
 const RegisterForm = () => {
@@ -35,21 +53,38 @@ const RegisterForm = () => {
   const dispatch = useDispatch();
   const [error, setError] = useState(null);
   const navigate = useNavigate(); // Get the history object
+  const [showPassword, setShowPassword] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+
+  const handleSnackbarOpen = (message) => {
+    setSnackbarMessage(message);
+    setOpenSnackbar(true);
+  };
+
+  const handleSnackbarClose = () => {
+    setOpenSnackbar(false);
+  };
 
   const onSubmit = async (data) => {
     try {
       const apiUrl = "http://localhost:57679/Thinker/Register";
       const response = await axios.post(apiUrl, data);
-      response.status == 201 ? navigate("/login") : navigate("/login");
+      response.status == 201
+        ? navigate("/") && handleSnackbarOpen("با موفقیت لاگین شد")
+        : navigate("/") &&
+          handleSnackbarOpen("Login failed. Check your credentials");
     } catch (error) {
       // Handle network or request errors
-      setError("Registration failed due to a network error.");
-      toast.error("Registration failed - Network error", {
-        position: "top-right",
-      });
+      setError("Login failed. An error occurred.");
+      handleSnackbarOpen("موفقیت آمیز نبود");
     }
     // superadmin
     // 87654321aA
+  };
+
+  const onRegisterClick = () => {
+    navigate("/");
   };
 
   return (
@@ -59,6 +94,20 @@ const RegisterForm = () => {
           <Paper elevation={3} className={classes.paper}>
             <Typography mb={4} variant="h5" component="div" align="center">
               Register
+            </Typography>
+            <Typography variant="subtitle1" align="center" gutterBottom>
+              شما میتوانید در این قسمت به صفحه ورود برگردید
+              <span
+                style={{
+                  color: "blue",
+                  cursor: "pointer",
+                  margin: "2px",
+                  padding: "2px",
+                }}
+                onClick={onRegisterClick}
+              >
+                ورود
+              </span>
             </Typography>
             <form onSubmit={handleSubmit(onSubmit)} className={classes.form}>
               <Controller
@@ -99,10 +148,23 @@ const RegisterForm = () => {
                     {...field}
                     label="Password"
                     variant="outlined"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
+                    className={showPassword ? classes.showPasswordIcon : ""}
                     fullWidth
                     error={!!errors.password}
                     helperText={errors.password?.message}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => setShowPassword(!showPassword)}
+                            edge="end"
+                          >
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
                   />
                 )}
               />
@@ -142,6 +204,12 @@ const RegisterForm = () => {
           </Paper>
         </Grid>
       </Grid>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={4000}
+        onClose={handleSnackbarClose}
+        message={snackbarMessage}
+      />
     </div>
   );
 };

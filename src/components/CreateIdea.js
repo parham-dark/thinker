@@ -1,6 +1,13 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { Button, Paper, Typography, TextField, Grid } from "@mui/material";
+import {
+  Button,
+  Paper,
+  Typography,
+  TextField,
+  Grid,
+  Snackbar,
+} from "@mui/material";
 import axios from "axios";
 import { makeStyles } from "@mui/styles";
 import { useNavigate } from "react-router-dom";
@@ -8,7 +15,7 @@ import Footer from "./footer";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    background: "linear-gradient(to right, #c31432, #240b36)",
+    // background: "linear-gradient(to right, #c31432, #240b36)",
     minHeight: "100vh",
     display: "flex",
     alignItems: "center",
@@ -61,6 +68,8 @@ const CreateIdea = ({ navigator }) => {
   } = useForm();
   const classes = useStyles();
   const navigate = useNavigate();
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   const onSubmit = async (data) => {
     try {
@@ -68,9 +77,17 @@ const CreateIdea = ({ navigator }) => {
         "http://localhost:57679/Thinker/createIdeas",
         data
       );
-      navigate("/home", { state: { access: 0 } });
+
+      if (response.status === 201) {
+        // Show success message using Snackbar
+        setSnackbarMessage("ایده شما با موفقیت ثبت شد");
+        setSnackbarOpen(true);
+      }
+      // navigate({ state: { access: 0 } });
     } catch (error) {
-      console.error("API error:", error);
+      setSnackbarMessage("ایده شما ثبت نشد نام کاربری اشتباه است");
+      setSnackbarOpen(true);
+      // console.error("API error:", error);
     }
   };
 
@@ -173,6 +190,11 @@ const CreateIdea = ({ navigator }) => {
           </Grid>
         </form>
         <Footer navigate={navigate} />
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={4000}
+          message={snackbarMessage}
+        />
       </Paper>
     </div>
   );

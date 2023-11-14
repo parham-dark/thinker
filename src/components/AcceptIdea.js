@@ -74,8 +74,6 @@ const AcceptIdea = () => {
   const personId = useSelector((state) => state.auth.personId);
 
   const navigate = useNavigate();
-  // const personId = location.state?.personId;
-  const access = location.state?.access;
 
   console.log(personId, "personId");
 

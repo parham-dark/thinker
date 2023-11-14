@@ -32,11 +32,11 @@ const Footer = ({ navigate }) => {
   const classes = useStyles();
 
   const handleLogin = () => {
-    navigate("/login");
+    navigate("/");
   };
 
   const handleRegister = () => {
-    navigate("/");
+    navigate("/Register");
   };
 
   const hanldeCreatePerson = () => {
@@ -64,12 +64,8 @@ const Footer = ({ navigate }) => {
           ثبت نام
         </Link>
         <span className={classes.linkSeparator}>|</span>
-        <Link className={classes.link} onClick={hanldeCreatePerson}>
-          انتخاب نقش
-        </Link>
-        <span className={classes.linkSeparator}>|</span>
         <Link className={classes.link} onClick={hanldeCreatePersonBack}>
-          home
+          صفحه اصلی
         </Link>
       </Typography>
     </Paper>

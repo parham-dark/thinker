@@ -68,7 +68,7 @@ const RegisterForm = () => {
 
   const onSubmit = async (data) => {
     try {
-      const apiUrl = "http://localhost:57679/Thinker/Register";
+      const apiUrl = "http://172.21.27.245:57679/Thinker/Register";
       const response = await axios.post(apiUrl, data);
       response.status == 201
         ? navigate("/") && handleSnackbarOpen("با موفقیت لاگین شد")

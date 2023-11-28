@@ -93,7 +93,7 @@ const AcceptIdea = () => {
     };
 
     axios
-      .post("http://localhost:57679/Thinker/LikeIdea", likeData)
+      .post("http://172.21.27.245:57679/Thinker/LikeIdea", likeData)
       .then((response) => {
         const updatedIdeas = ideas.map((idea) =>
           idea.id === ideaId ? { ...idea, liked: true, disliked: false } : idea
@@ -114,7 +114,7 @@ const AcceptIdea = () => {
     };
 
     axios
-      .post("http://localhost:57679/Thinker/DislikeIdea", dislikeData)
+      .post("http://172.21.27.245:57679/Thinker/DislikeIdea", dislikeData)
       .then((response) => {
         const updatedIdeas = ideas.map((idea) =>
           idea.id === ideaId ? { ...idea, liked: false, disliked: true } : idea
@@ -129,7 +129,7 @@ const AcceptIdea = () => {
   };
 
   useEffect(() => {
-    const apiUrl = "http://localhost:57679/api/Thinker/GetAllAcceptIdeas";
+    const apiUrl = "http://172.21.27.245:57679/api/Thinker/GetAllAcceptIdeas";
 
     axios
       .get(apiUrl)

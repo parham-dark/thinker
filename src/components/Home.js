@@ -127,7 +127,7 @@ const Home = (props) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   useEffect(() => {
-    const apiUrl = "http://localhost:57679/api/Thinker/GetAllAcceptIdeas";
+    const apiUrl = "http://172.21.27.245:57679/api/Thinker/GetAllAcceptIdeas";
     axios
       .get(apiUrl)
       .then((response) => {
@@ -143,7 +143,7 @@ const Home = (props) => {
   }, []);
 
   useEffect(() => {
-    const apiUrlRefress = "http://localhost:57679/Thinker/getAllIdeas";
+    const apiUrlRefress = "http://172.21.27.245:57679/Thinker/getAllIdeas";
     axios
       .get(apiUrlRefress)
       .then((response) => {
@@ -156,7 +156,7 @@ const Home = (props) => {
 
   const acceptIdea = async (data) => {
     try {
-      const apiUrl = `http://localhost:57679/Thinker/ApproveIdeaByReferee`;
+      const apiUrl = `http://172.21.27.245:57679/Thinker/ApproveIdeaByReferee`;
       const response = await axios.post(apiUrl, data);
 
       response.data

@@ -33,7 +33,7 @@ const Thinker = () => {
   const onSubmit = async (data) => {
     try {
       const response = await axios.post(
-        "http://localhost:57679/Thinker/createIdeas",
+        "http://172.21.27.245:57679/Thinker/createIdeas",
         data
       );
       console.log("API response:", response.data);

@@ -75,7 +75,7 @@ const CreatePerson = () => {
       };
 
       const response = await axios.post(
-        "http://localhost:57679/Thinker/Person/create",
+        "http://172.21.27.245:57679/Thinker/Person/create",
         postData
       );
 
